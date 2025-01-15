@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	update book
+{% endblock %}
+
+{% block body %}
+  <h1>Обновить книгу</h1>
+  <form action="" method="post" enctype="multipart/form-data">
+  {{ form.csrf_token }}
+    <p>
+      {{ form.title.label }}<br>
+      {{ form.title(size=60) }}<br>
+      {% for error in form.title.errors %}
+        <span style="color: red">[{{ error }}]</span>
+      {% endfor %}
+    </p>
+    <p>
+      {{ form.author.label }}<br>
+      {{ form.author(size=60) }}<br>
+      {% for error in form.author.errors %}
+        <span style="color: red">[{{ error }}]</span>
+      {% endfor %}
+    </p>
+    <p>
+      {{ form.year.label }}<br>
+      {{ form.year }}<br>
+      {% for error in form.year.errors %}
+        <span style="color: red">[{{ error }}]</span>
+      {% endfor %}
+    </p>
+    <p>
+      {{ form.description.label }}<br>
+      {{ form.description }}<br>
+      {% for error in form.description.errors %}
+        <span style="color: red">[{{ error }}]</span>
+      {% endfor %}
+    </p>
+    <p>
+      {{ form.image.label }}<br>
+      {{ form.image }}<br>
+    </p>
+    <p>
+      {{ form.file.label }}<br>
+      {{ form.file }}<br>
+    </p>
+    <p>
+      {{ form.archived.label }}<br>
+      {{ form.archived }}
+    </p>
+    <p>
+      {{ form.submit() }}
+    </p>
+  </form>
+{% endblock %}

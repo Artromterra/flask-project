@@ -1,40 +1,54 @@
 from typing import Any, Dict
+from datetime import datetime
 
-from sqlalchemy import Column, Integer, Text, String, Boolean, ForeignKey, Table
+from flask_login import UserMixin
+from sqlalchemy import Boolean, Column, DateTime, Integer, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
+from werkzeug.security import generate_password_hash, check_password_hash
 
-from database import Base
+from app_init import login_manager
+from database import Base, session
 
 
-class User(Base):
+class User(Base, UserMixin):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    email = Column(String, nullable=True)
+    name = Column(String(70), nullable=False)
+    email = Column(String(120), nullable=True)
     password = Column(String, nullable=False)
-    is_registered = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
     is_admin = Column(Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return "<User(name='{name}', email='{email}')>".format(
+        return "<User(id='{id}' name='{name}')>".format(
+            id=self.id,
             name=self.name,
-            email=self.email
         )
 
-    def to_json(self) -> Dict[str, Any]:
-        return {c.name: getattr(self, c.name) for c in
-                self.__table__.columns}
+    # хеширование паролей
+    def set_password(self, password: str):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password: str):
+        return check_password_hash(self.password, password)
+
+
+@login_manager.user_loader
+def load_user(user_id: int):
+    return session.query(User).get(user_id)
 
 
 class Book(Base):
     __tablename__ = 'book'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String, nullable=False)
-    author = Column(String, nullable=False)
+    title = Column(String(120), nullable=False)
+    author = Column(String(60), nullable=False)
     year = Column(Integer, nullable=False)
     description = Column(Text, nullable=False)
-    image_path = Column(String, nullable=True)
+    image = Column(String, nullable=True)
+    file = Column(String, nullable=True)
+    archived = Column(Boolean, nullable=False, default=False)
 
     genrebook = relationship(
         'GenreBook',
@@ -49,15 +63,11 @@ class Book(Base):
             author=self.author,
         )
 
-    def to_json(self) -> Dict[str, Any]:
-        return {c.name: getattr(self, c.name) for c in
-                self.__table__.columns}
-
 
 class Genre(Base):
     __tablename__ = 'genre'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=True)
+    name = Column(String, nullable=False, unique=True)
 
     genrebook = relationship(
         'GenreBook',

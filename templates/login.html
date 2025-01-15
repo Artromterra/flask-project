@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}
+	логин
+{% endblock %}
+
+{% block body %}
+  <div class="login-container">
+    <h1 class="login-title">Введите данные для входа на сайт</h1>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <spam class="{{ category }}">{{ message }}</spam>
+    {% endfor %}
+    <form action="" method="post">
+    {{ form.csrf_token }}
+      <p class="login-field">
+        {{ form.username.label() }}<br>
+        {{ form.username() }}<br>
+        {% if form.username.errors %}
+          {% for error in form.username.errors %}
+            {{ error }}
+          {% endfor %}
+        {% endif %}
+      </p>
+      <p class="login-field">
+        {{ form.password.label() }}<br>
+        {{ form.password() }}<br>
+        {% if form.password.errors %}
+          {% for error in form.password.errors %}
+            {{ error }}
+          {% endfor %}
+        {% endif %}
+      </p>
+      <p class="login-field">
+        {{ form.remember_me.label() }}
+        {{ form.remember_me() }}
+      </p>
+      <p class="login-button">
+        {{ form.submit() }}
+      </p>
+    </form>
+  </div>
+
+{% endblock %}
