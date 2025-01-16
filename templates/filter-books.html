@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block title %}
-	books list
+	books by genre
 {% endblock %}
 
 {% block body %}
   <div class="books-container">
-    <h1 class="books-title">Библиотека ></h1>
+    <h1 class="books-title">Список книг по жанру {{ genres }}</h1>
     <div class="books-presentation">
       {% for book in books %}
         <a href="{{ url_for('book_detail', book_id=book.id) }}" class="books-card">
@@ -25,5 +25,4 @@
       {% endfor %}
     </div>
   </div>
-
 {% endblock %}

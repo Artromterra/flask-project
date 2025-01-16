@@ -19,7 +19,6 @@
     </a>
     <div class="base-link-container">
       <a class="base-header-link" href="{{ url_for('registration') }}">Зарегистрироваться</a>
-      <a class="base-header-link" href="{{ url_for('logout') }}">Выйти</a>
       <a class="base-header-link" href="{{ url_for('login') }}">Войти</a>
       <a class="base-header-link" href="{{ url_for('admin') }}">Войти в админ панель</a>
     </div>
@@ -27,6 +26,7 @@
       {% if current_user.is_authenticated %}
         <img class="base-user-avatar" src="/static/images/plug.png" alt="user-avatar">
       	<p>{{ current_user.name }}</p>
+        <a class="base-user-link" href="{{ url_for('logout') }}">Выйти</a>
       {% else %}
         <p>Anonymous User</p>
       {% endif %}

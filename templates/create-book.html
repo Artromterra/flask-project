@@ -5,55 +5,58 @@
 {% endblock %}
 
 {% block body %}
-  <h1>Создание книги</h1>
-	<form action="" method="post" enctype="multipart/form-data">
-  {{ form.csrf_token }}
-    <p>
-      {{ form.title.label }}<br>
-      {{ form.title(size=60) }}<br>
-      {% for error in form.title.errors %}
-        <span style="color: red">[{{ error }}]</span>
-      {% endfor %}
-    </p>
-    <p>
-      {{ form.author.label }}<br>
-      {{ form.author(size=60) }}<br>
-      {% for error in form.author.errors %}
-        <span style="color: red">[{{ error }}]</span>
-      {% endfor %}
-    </p>
-    <p>
-      {{ form.year.label }}<br>
-      {{ form.year }}<br>
-      {% for error in form.year.errors %}
-        <span style="color: red">[{{ error }}]</span>
-      {% endfor %}
-    </p>
-    <p>
-      {{ form.description.label }}<br>
-      {{ form.description }}<br>
-      {% for error in form.description.errors %}
-        <span style="color: red">[{{ error }}]</span>
-      {% endfor %}
-    </p>
-    <p>
-      {{ form.image.label }}<br>
-      {{ form.image }}<br>
-    </p>
-    <p>
-      {{ form.file.label }}<br>
-      {{ form.file }}<br>
-    </p>
-    <p>
-      {{ form.genres.label }}<br>
-      {{ form.genres(class='form-control') }}
-    </p>
-    <p>
-      {{ form.archived.label }}<br>
-      {{ form.archived }}
-    </p>
-    <p>
-      {{ form.submit() }}
-    </p>
-  </form>
+  <div class="create-container">
+    <h2 class="create-title">Создайте книгу в форме ниже</h2>
+    <form action="" method="post" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+      <p class="create-field">
+        {{ form.title.label }}<br>
+        {{ form.title(size=60) }}<br>
+        {% for error in form.title.errors %}
+          <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </p>
+      <p class="create-field">
+        {{ form.author.label }}<br>
+        {{ form.author(size=60) }}<br>
+        {% for error in form.author.errors %}
+          <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </p>
+      <p class="create-field">
+        {{ form.year.label }}<br>
+        {{ form.year }}<br>
+        {% for error in form.year.errors %}
+          <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </p>
+      <p class="create-field">
+        {{ form.description.label }}<br>
+        {{ form.description }}<br>
+        {% for error in form.description.errors %}
+          <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </p>
+      <p class="create-field">
+        {{ form.image.label }}<br>
+        {{ form.image }}<br>
+      </p>
+      <p class="create-field">
+        {{ form.file.label }}<br>
+        {{ form.file }}<br>
+      </p>
+      <p class="create-field">
+        {{ form.genres.label }}<br>
+        {{ form.genres(class='form-control') }}
+      </p>
+      <p class="create-field">
+        {{ form.archived.label }}<br>
+        {{ form.archived }}
+      </p>
+      <p class="create-button">
+        {{ form.submit() }}
+      </p>
+    </form>
+  </div>
+
 {% endblock %}

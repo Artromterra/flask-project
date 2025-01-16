@@ -128,6 +128,16 @@ def book_detail(book_id):
     return render_template('book-detail.html', book=book)
 
 
+@app.route('/book/genres/<genre>/', methods=['GET'])
+@login_required
+def book_sort_by_genre(genre):
+    books = (session.query(Book).
+             filter(Book.genres.any(Genre.name == genre)).
+             order_by(Book.title).all()
+             )
+    return render_template('filter-books.html', books=books, genres=genre)
+
+
 @app.route('/book/create/', methods=['GET', 'POST'])
 @login_required
 def book_create():
@@ -169,7 +179,7 @@ def book_create():
 @login_required
 def book_update_list():
     if current_user.is_admin:
-        books = session.query(Book).all()
+        books = session.query(Book).order_by(Book.title).all()
         return render_template('book-update-list.html', books=books)
     return redirect(url_for('books_list'))
 

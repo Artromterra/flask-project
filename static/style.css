@@ -57,6 +57,13 @@ img {
   font-display: swap;
 }
 
+/*global*/
+.list-reset {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
 /*base*/
 .base {
     min-width: 100%;
@@ -87,22 +94,18 @@ img {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 50%;
+    width: 45%;
 }
 
 .base-header-link {
-    padding: 8px 15px;
-    background-color: transparent;
-    border-radius: 20px;
-    transition: background-color 0.5s ease;
-}
-
-.base-header-link:nth-child(-n+3) {
-    margin-right: 20px;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    transition: color 0.5s ease;
 }
 
 .base-header-link:hover {
-    background-color: rgba(2,93,105,0.17);
+    color: rgba(120, 224, 63, 0.99);
 }
 
 .base-user {
@@ -114,6 +117,16 @@ img {
 .base-user-avatar {
     max-width: 70px;
     border-radius: 10px;
+}
+
+.base-user-link {
+    font-weight: 700;
+    color: #e7cf57;
+    transition: color 0.5s ease;
+}
+
+.base-user-link:hover {
+    color: rgba(120, 224, 63, 0.99);
 }
 
 /*index*/
@@ -161,11 +174,6 @@ img {
 /*login page*/
 .login-container {
     padding: 20px 40px;
-    /*background: url(images/background-base.jpg) no-repeat center center fixed;*/
-    /*    -webkit-background-size: cover;*/
-    /*    -moz-background-size: cover;*/
-    /*    -o-background-size: cover;*/
-    /*    background-size: cover;*/
 }
 
 .login-title {
@@ -290,12 +298,13 @@ img {
 .book-detail-description {
     display: flex;
     flex-direction: column;
+    width: 35%;
 }
 
 .description-label-wrapper {
     display: flex;
     justify-content: space-between;
-    max-width: 33%;
+    max-width: 46%;
     margin-bottom: 10px;
 }
 
@@ -366,10 +375,11 @@ img {
     border-radius: 10px;
     margin-bottom: 30px;
     width: 110px;
+    transition: outline-color 0.5s ease-in-out;
 }
 
 .download-link:hover {
-    outline: 2px solid #8d88a3;
+    outline: 2px solid #53468c;
 }
 
 .download-info {
@@ -379,4 +389,60 @@ img {
 
 .back-link:hover {
     color: royalblue;
+}
+
+/*register page*/
+.register-container {
+    padding: 20px 40px;
+}
+
+.register-title {
+    margin-bottom: 20px;
+}
+
+.register-field {
+    margin-bottom: 10px;
+}
+
+/*create book page*/
+.create-container {
+    padding: 20px 40px;
+}
+
+.create-title {
+    margin-bottom: 20px;
+}
+
+.create-field {
+    margin-bottom: 10px;
+}
+
+/*update-list page*/
+.update-container {
+    padding: 20px 40px;
+}
+
+.update-title {
+    margin-bottom: 20px;
+}
+
+.update-list-field {
+    margin-bottom: 10px;
+}
+
+.update-link:hover {
+    color: rgba(90,155,53,0.99);
+}
+
+/*update-book page*/
+.update_book-container {
+    padding: 20px 40px;
+}
+
+.update_book-title {
+    margin-bottom: 20px;
+}
+
+.update_book-field {
+    margin-bottom: 10px;
 }

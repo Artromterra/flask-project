@@ -20,7 +20,7 @@
       <h4 class="description-genre-title">Жанры</h4>
       <div>
         {% for genre in book.genres %}
-          <a href="#" class="span-genre">{{ genre.name }}</a>
+          <a href="{{ url_for('book_sort_by_genre', genre=genre.name) }}" class="span-genre">{{ genre.name }}</a>
         {% endfor %}
       </div>
       <div class="book-detail-link">
