@@ -1,58 +1,68 @@
 {% extends 'base.html' %}
 
 {% block title %}
-	update book
+	create book
 {% endblock %}
 
 {% block body %}
-  <div class="update_book-container">
-    <h2 class="update_book-title">Обновить книгу</h2>
-    <form action="" method="post" enctype="multipart/form-data">
+  <div class="create-container">
+    <h2 class="create-title">Создайте книгу в форме ниже</h2>
+    <form class="create-form" action="" method="post" enctype="multipart/form-data">
     {{ form.csrf_token }}
-      <p class="update_book-field">
+      <p class="create-field">
         {{ form.title.label }}<br>
         {{ form.title(size=60) }}<br>
         {% for error in form.title.errors %}
           <span style="color: red">[{{ error }}]</span>
         {% endfor %}
       </p>
-      <p class="update_book-field">
+      <p class="create-field">
         {{ form.author.label }}<br>
         {{ form.author(size=60) }}<br>
         {% for error in form.author.errors %}
           <span style="color: red">[{{ error }}]</span>
         {% endfor %}
       </p>
-      <p class="update_book-field">
+      <p class="create-field">
         {{ form.year.label }}<br>
         {{ form.year }}<br>
         {% for error in form.year.errors %}
           <span style="color: red">[{{ error }}]</span>
         {% endfor %}
       </p>
-      <p class="update_book-field">
+      <p class="create-field">
         {{ form.description.label }}<br>
         {{ form.description }}<br>
         {% for error in form.description.errors %}
           <span style="color: red">[{{ error }}]</span>
         {% endfor %}
       </p>
-      <p class="update_book-field">
+      <p class="create-field">
         {{ form.image.label }}<br>
         {{ form.image }}<br>
       </p>
-      <p class="update_book-field">
+      <p class="create-field">
         {{ form.file.label }}<br>
         {{ form.file }}<br>
       </p>
-      <p class="update_book-field">
+      <p class="create-field">
+        {{ form.genres.label }}<br>
+        {{ form.genres(class='form-control') }}
+      </p>
+      <p class="create-field">
         {{ form.archived.label }}<br>
         {{ form.archived }}
       </p>
-      <p class="update_book-button">
+      <p class="create-button">
         {{ form.submit() }}
       </p>
     </form>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <p class="{{ category }}">{{ message }}</p>
+    {% endfor %}
+    <div class="create-link-container">
+      <a class="create-link" href="{{ url_for('books_list') }}"><< К книгам</a>
+    </div>
   </div>
 
 {% endblock %}

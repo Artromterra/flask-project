@@ -4,9 +4,34 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_USER=os.getenv("DATABASE_USER")
-DATABASE_PASSWORD=os.getenv("DATABASE_PASSWORD")
-DB_PORT=os.getenv("DB_PORT")
-DB_NAME=os.getenv("DB_NAME")
-DB_HOST=os.getenv("DB_HOST")
-SECRET_KEY=os.getenv("SECRET_KEY")
+class Config:
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    DATABASE_USER=os.getenv("DATABASE_USER")
+    DATABASE_PASSWORD=os.getenv("DATABASE_PASSWORD")
+    DB_PORT=os.getenv("DB_PORT")
+    DB_NAME=os.getenv("DB_NAME")
+    DB_HOST=os.getenv("DB_HOST")
+    UPLOAD_IMAGE_FOLDER = os.path.abspath('main/static/images')
+    UPLOAD_FILE_FOLDER = os.path.abspath('main/static/files')
+    SQLALCHEMY_DATABASE_URI='postgresql+psycopg2://{user}:{password}@{host}:{port}'.format(
+        user=DATABASE_USER,
+        password=DATABASE_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT,
+    )
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
+    DEBUG=False
+    TESTING=False
+
+class DevelopmentConfig(Config):
+    DEBUG=True
+
+class TestingConfig(Config):
+    TESTING=True
+    SQLALCHEMY_DATABASE_URI='sqlite:///test.db'
+    WTF_CSRF_ENABLED=False
+    UPLOAD_FILE_FOLDER = os.path.abspath('files')
+    UPLOAD_IMAGE_FOLDER = os.path.abspath('files')
+
+class ProductionConfig(Config):
+    DEBUG=False

@@ -1,33 +1,37 @@
 import json
 
-from flask import render_template, redirect, url_for, flash, send_from_directory
+from flask import request, render_template, redirect, url_for, flash, send_from_directory
 from flask_login import login_required, login_user, logout_user, current_user
 from sqlalchemy import select
 from werkzeug.security import generate_password_hash
 
-from database import Base, engine, session
-from app_init import app
-from forms import LoginForm, RegistrationForm, BookCreateForm
-from models import Book, Genre, GenreBook, User
-from utils import upload_file, upload_image
+from main import app, db, login_manager
+from main.forms import LoginForm, RegistrationForm, BookCreateForm, BookUpdateForm
+from main.models import Book, Genre, GenreBook, User
+from main.utils import upload_file, upload_image
+
+
+@login_manager.user_loader
+def load_user(user_id: int):
+    return db.session.query(User).get(user_id)
 
 
 @app.before_request
 def before_request():
-    # Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    # db.drop_all()
+    db.create_all()
     stmt = select(Book)
-    exist = session.execute(stmt)
+    exist = db.session.execute(stmt)
     if exist.fetchall():
         return
 
-    with open('fixtures/books.json', encoding='utf-8') as file:
+    with open('../fixtures/books.json', encoding='utf-8') as file:
         books = json.load(file)
 
-    with open('fixtures/genre.json', encoding='utf-8') as file:
+    with open('../fixtures/genre.json', encoding='utf-8') as file:
         genres = json.load(file)
 
-    with open('fixtures/genre_book.json', encoding='utf-8') as file:
+    with open('../fixtures/genre_book.json', encoding='utf-8') as file:
         genre_books = json.load(file)
 
     for book_data in books:
@@ -36,19 +40,21 @@ def before_request():
             author=book_data['author'],
             year=book_data['pub date'],
             description=book_data['description'],
+            image=book_data['image'],
+            file=book_data['file'],
         )
-        session.add(book)
+        db.session.add(book)
 
     for genre_data in genres:
         genre = Genre(name=genre_data['name'])
-        session.add(genre)
+        db.session.add(genre)
 
     for gb_data in genre_books:
         gb = GenreBook(
             book_id=gb_data['book_id'],
             genre_id=gb_data['genre_id'],
         )
-        session.add(gb)
+        db.session.add(gb)
 
     password = generate_password_hash('admin')
     user = User(
@@ -57,9 +63,9 @@ def before_request():
         password=password,
         is_admin=True,
     )
-    session.add(user)
+    db.session.add(user)
 
-    session.commit()
+    db.session.commit()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -72,17 +78,18 @@ def registration():
     if current_user.is_authenticated:
         return redirect(url_for('books_list'))
     form = RegistrationForm()
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         user = User(
             name=form.username.data,
             email=form.email.data,
         )
         user.set_password(form.password.data)
-        session.add(user)
-        session.commit()
+        db.session.add(user)
+        db.session.commit()
         flash('Вы успешно зарегистрировались!')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
+
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -90,7 +97,7 @@ def login():
         return redirect(url_for('books_list'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = session.query(User).filter(User.name == form.username.data).first()
+        user = db.session.query(User).filter(User.name == form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect(url_for('books_list'))
@@ -106,7 +113,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/admin/')
+@app.route('/admin/', methods=['GET'])
 @login_required
 def admin():
     if current_user.is_admin:
@@ -117,21 +124,21 @@ def admin():
 @app.route('/books/', methods=['GET'])
 @login_required
 def books_list():
-    books = session.query(Book).filter(Book.archived == False).order_by(Book.title).all()
+    books = db.session.query(Book).filter(Book.archived == False).order_by(Book.title).all()
     return render_template('books.html', books=books)
 
 
 @app.route('/book/detail/<int:book_id>/', methods=['GET'])
 @login_required
 def book_detail(book_id):
-    book = session.query(Book).filter(Book.id == book_id).first()
+    book = db.session.query(Book).filter(Book.id == book_id).first()
     return render_template('book-detail.html', book=book)
 
 
 @app.route('/book/genres/<genre>/', methods=['GET'])
 @login_required
 def book_sort_by_genre(genre):
-    books = (session.query(Book).
+    books = (db.session.query(Book).
              filter(Book.genres.any(Genre.name == genre)).
              order_by(Book.title).all()
              )
@@ -144,7 +151,9 @@ def book_create():
     gb_list  = []
     if current_user.is_admin:
         form = BookCreateForm()
-        form.genres.choices = [(g.id, g.name) for g in session.query(Genre).order_by(Genre.name).all()]
+        form.genres.choices = [
+            (g.id, g.name) for g in db.session.query(Genre).order_by(Genre.name).all()
+        ]
         if form.validate_on_submit():
             file_path = upload_file(form=form)
             img_path = upload_image(form=form)
@@ -156,20 +165,24 @@ def book_create():
                 image=img_path,
                 file=file_path,
             )
-            session.add(book)
-            session.commit()
-            book_id = session.query(Book.id).filter(
+            db.session.add(book)
+            db.session.commit()
+            book_id = db.session.query(Book.id).filter(
                 Book.title == form.title.data,
                 Book.author == form.author.data,
-            ).first()
+            ).first()[0]
+            gb = GenreBook(
+                book_id=book_id,
+            )
             for genre_id in form.genres.data:
                 genre_book = GenreBook(
                     book_id=book_id,
                     genre_id=int(genre_id),
                 )
                 gb_list.append(genre_book)
-            session.add_all(gb_list)
-            session.commit()
+            db.session.add_all(gb_list)
+            db.session.commit()
+            flash('Вы успешно создали книгу!', category='create-success')
         return render_template('create-book.html', form=form)
     else:
         return redirect(url_for('login'))
@@ -179,7 +192,7 @@ def book_create():
 @login_required
 def book_update_list():
     if current_user.is_admin:
-        books = session.query(Book).order_by(Book.title).all()
+        books = db.session.query(Book).order_by(Book.title).all()
         return render_template('book-update-list.html', books=books)
     return redirect(url_for('books_list'))
 
@@ -188,8 +201,8 @@ def book_update_list():
 @login_required
 def book_update(book_id):
     if current_user.is_admin:
-        book = session.query(Book).filter(Book.id == book_id).first()
-        form = BookCreateForm(obj=book)
+        book = db.session.query(Book).filter(Book.id == book_id).first()
+        form = BookUpdateForm(obj=book)
         if form.validate_on_submit():
             file_path = upload_file(form=form)
             img_path = upload_image(form=form)
@@ -208,17 +221,15 @@ def book_update(book_id):
             else:
                 book.file = file_path
 
-            session.add(book)
-            session.commit()
-            return redirect(url_for('book_update_list'))
+            db.session.add(book)
+            db.session.commit()
+            flash('Вы успешно обновили книгу!', category='update-success')
+            # return redirect(url_for('book_update_list'))
         return render_template('update-book.html', form=form)
 
 
 @app.route('/book/download/<path:name>/', methods=['GET'])
 @login_required
 def book_download(name):
+    # path = app.config['UPLOAD_FILE_FOLDER']
     return send_from_directory(app.config['UPLOAD_FILE_FOLDER'], name, as_attachment=True)
-
-
-if __name__ == '__main__':
-    app.run()

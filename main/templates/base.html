@@ -15,7 +15,7 @@
 <body class="base">
   <header class="base-header">
     <a href="{{ url_for('index') }}">
-      <img class="base-header-logo" src="/static/images/logo.png" alt="logo">
+      <img class="base-header-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="logo">
     </a>
     <div class="base-link-container">
       <a class="base-header-link" href="{{ url_for('registration') }}">Зарегистрироваться</a>
@@ -24,7 +24,7 @@
     </div>
     <div class="base-user">
       {% if current_user.is_authenticated %}
-        <img class="base-user-avatar" src="/static/images/plug.png" alt="user-avatar">
+        <img class="base-user-avatar" src="{{ url_for('static', filename='images/plug.png') }}" alt="user-avatar">
       	<p>{{ current_user.name }}</p>
         <a class="base-user-link" href="{{ url_for('logout') }}">Выйти</a>
       {% else %}

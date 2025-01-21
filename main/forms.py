@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileRequired, FileAllowed
+from flask_wtf.file import FileAllowed
 from wtforms import (
     StringField,
     PasswordField,
@@ -11,9 +11,8 @@ from wtforms import (
     SelectMultipleField,
 )
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
-
-from database import session
-from models import User, Genre
+from main import db
+from main.models import User
 
 
 class RegistrationForm(FlaskForm):
@@ -24,7 +23,7 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Отправить')
 
     def validate_email(self, field):
-        if session.query(User).filter_by(email=field.data).first():
+        if db.session.query(User).filter_by(email=field.data).first():
             raise ValidationError('Почта уже используется')
 
 
@@ -48,3 +47,17 @@ class BookCreateForm(FlaskForm):
     genres = SelectMultipleField('Жанр',choices=[])
     archived = BooleanField('Архивировать книгу')
     submit = SubmitField('Создать')
+
+
+class BookUpdateForm(FlaskForm):
+    title = StringField('Заголовок', validators=[DataRequired()])
+    author = StringField('Автор', validators=[DataRequired()])
+    year = IntegerField('Год публикации', validators=[DataRequired()])
+    description = TextAreaField('Описание', validators=[DataRequired()])
+    image = FileField('Картинка', validators=[
+        FileAllowed(['png', 'jpg', 'jpeg', 'gif'], 'Only images!')
+    ])
+    file = FileField('Файл', validators=[
+        FileAllowed(['pdf', 'txt'], 'PDF or TXT files only!')])
+    archived = BooleanField('Архивировать книгу')
+    submit = SubmitField('Обновить')
