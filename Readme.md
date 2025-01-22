@@ -26,8 +26,12 @@
 - Postgresql
 
 <h2 align="center">Развернуть проект локально</h2>
+
 - скачиваем проект с репозитория командой git clone https://github.com/Artromterra/flask-project.git
+
 - собираем, запускаем проект командой `docker compose build`, `docker compose up -d`
+
 - приложение будет доступно по адресу http://localhost:8000
+
 - для запуска тестов необходимо в файле "main/__init__.py" раскомментировать строку с тест конфигом,
 и из директории test запустить команду в консоли pytest -v test.py
