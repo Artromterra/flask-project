@@ -25,13 +25,13 @@ def before_request():
     if exist.fetchall():
         return
 
-    with open('../fixtures/books.json', encoding='utf-8') as file:
+    with open('./fixtures/books.json', encoding='utf-8') as file:
         books = json.load(file)
 
-    with open('../fixtures/genre.json', encoding='utf-8') as file:
+    with open('./fixtures/genre.json', encoding='utf-8') as file:
         genres = json.load(file)
 
-    with open('../fixtures/genre_book.json', encoding='utf-8') as file:
+    with open('./fixtures/genre_book.json', encoding='utf-8') as file:
         genre_books = json.load(file)
 
     for book_data in books:
