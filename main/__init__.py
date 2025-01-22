@@ -2,7 +2,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
-from env_conf import DevelopmentConfig, TestingConfig
+from env_conf import DevelopmentConfig, TestingConfig, ProductionConfig
 
 app = Flask(__name__)
 
@@ -10,7 +10,10 @@ app = Flask(__name__)
 # app.config.from_object(DevelopmentConfig)
 
 # для запуска тестов
-app.config.from_object(TestingConfig)
+# app.config.from_object(TestingConfig)
+
+# для production
+app.config.from_object(ProductionConfig)
 
 db = SQLAlchemy(app)
 

@@ -1,8 +1,8 @@
 import pytest
+
 from werkzeug.security import generate_password_hash
 
 from main import app, db as _db
-
 from main.models import Book, Genre, GenreBook, User
 
 

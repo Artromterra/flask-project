@@ -97,7 +97,9 @@ def login():
         return redirect(url_for('books_list'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = db.session.query(User).filter(User.name == form.username.data).first()
+        user = db.session.query(User).filter(
+            User.name == form.username.data
+        ).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect(url_for('books_list'))
@@ -124,14 +126,20 @@ def admin():
 @app.route('/books/', methods=['GET'])
 @login_required
 def books_list():
-    books = db.session.query(Book).filter(Book.archived == False).order_by(Book.title).all()
+    books = db.session.query(Book).filter(
+        Book.archived == False
+    ).order_by(
+        Book.title
+    ).all()
     return render_template('books.html', books=books)
 
 
 @app.route('/book/detail/<int:book_id>/', methods=['GET'])
 @login_required
 def book_detail(book_id):
-    book = db.session.query(Book).filter(Book.id == book_id).first()
+    book = db.session.query(Book).filter(
+        Book.id == book_id
+    ).first()
     return render_template('book-detail.html', book=book)
 
 
@@ -171,9 +179,6 @@ def book_create():
                 Book.title == form.title.data,
                 Book.author == form.author.data,
             ).first()[0]
-            gb = GenreBook(
-                book_id=book_id,
-            )
             for genre_id in form.genres.data:
                 genre_book = GenreBook(
                     book_id=book_id,
@@ -206,7 +211,6 @@ def book_update(book_id):
         if form.validate_on_submit():
             file_path = upload_file(form=form)
             img_path = upload_image(form=form)
-
             book.title = form.title.data
             book.author = form.author.data
             book.year = form.year.data
@@ -224,12 +228,14 @@ def book_update(book_id):
             db.session.add(book)
             db.session.commit()
             flash('Вы успешно обновили книгу!', category='update-success')
-            # return redirect(url_for('book_update_list'))
         return render_template('update-book.html', form=form)
 
 
 @app.route('/book/download/<path:name>/', methods=['GET'])
 @login_required
 def book_download(name):
-    # path = app.config['UPLOAD_FILE_FOLDER']
-    return send_from_directory(app.config['UPLOAD_FILE_FOLDER'], name, as_attachment=True)
+    return send_from_directory(
+        app.config['UPLOAD_FILE_FOLDER'],
+        name,
+        as_attachment=True
+    )
